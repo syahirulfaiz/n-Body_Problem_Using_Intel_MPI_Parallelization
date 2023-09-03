@@ -1,0 +1,18 @@
+SRC=nBody-MPI.c
+
+# use MPI icc compilation for this nBody-MPI.c
+module load intel intel-mpi			#load module intel MPI
+rm a.out					#remove a.out,(if any) from previous compilation/running
+mpiicc -O0 ${SRC}				#compile nBody-MPI.c using O (zero) optimisation
+
+#$ -V -cwd             				# use current environment and run from current directory
+#$ -l h_rt=00:05:00    				# hard runtime limit of wallclock of 5 minute
+#$ -j yes              				# merge stdout & stderr in to same output file
+#$ -l cputype=sandybridge,exclusive		# use node(s) with SandyBridge processors, with exclusive access to the node(s)
+
+echo Launching on $NSLOTS cores
+
+set -x                 				# echo all commands as they are run
+time mpirun -np $NSLOTS ./a.out			# parallelize with n-cores
+echo 'Finished'        				# indicate the end of the execution
+
